@@ -75,7 +75,7 @@ def draw_flux_realisation(
     return rng.normal(model_flux, flux_error)
 
 
-def compute_flux_realisation(
+def flux_realisation(
     model_flux: _TFloatArray,
     mag_limit: _TFloatArray,
     confidence: float,
@@ -113,7 +113,7 @@ def compute_flux_realisation(
     return flux, flux_error
 
 
-def compute_magnitude_realisation(
+def magnitude_realisation(
     model_mag: _TFloatArray,
     mag_limit: _TFloatArray,
     confidence: float,
@@ -161,7 +161,7 @@ def compute_magnitude_realisation(
     """
     # compute flux realisation and error from magnitudes
     model_flux = 10 ** (-0.4 * (model_mag - zeropoint))
-    flux, flux_error = compute_flux_realisation(
+    flux, flux_error = flux_realisation(
         model_flux, mag_limit, confidence, zeropoint, sn_weight, seed)
     snr = np.maximum(flux / flux_error, 0.0)  # ignore negative signal-to-noise
 
