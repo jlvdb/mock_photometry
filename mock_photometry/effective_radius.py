@@ -117,11 +117,11 @@ def effective_radius(
 
     Parameters
     ----------
-    r_disk : float or array
+    r_disk : float
         Effective radius of the n=1 Sersic disk component, zero to disable.
-    r_bulge : float or array
+    r_bulge : float
         Effective radius of the n=4 Sersice bulge component, zero to disable.
-    bulge_frac : float or array
+    bulge_frac : float
         Ratio of bulge-to-total flux, must be within [0, 1].
     flux_frac : float
         The fraction of the total flux for which the corresponding radius is
@@ -147,7 +147,9 @@ def effective_radius(
     return solution.root
 
 
-effective_radius_vectorized = np.vectorize(effective_radius)
+effective_radius_vectorized = np.vectorize(
+    effective_radius,
+    doc=effective_radius.__doc__.replace("float", "float or array"))
 
 
 def effective_radius_parallel(
