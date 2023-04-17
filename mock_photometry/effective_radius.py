@@ -10,6 +10,7 @@ n=4 and the disk component by a Sersic profile with index n=1.
 
 from __future__ import annotations
 
+import itertools
 import multiprocessing
 from typing import TypeAlias, TypeVar
 
@@ -20,7 +21,7 @@ from scipy.optimize import root_scalar
 from scipy.special import gammainc
 
 _TFloatArray: TypeAlias = float | NDArray[np.float_]
-_TRadius = TypeVar("_TRadius", _TFloatArray)
+_TRadius = TypeVar("_TRadius", bound=_TFloatArray)
 
 
 def sersic_b_n(index: int) -> float:
@@ -134,12 +135,12 @@ def effective_radius(
     """
     # guess a bracketing radii for the root finder
     test_radii = max(r_disk, r_bulge) * np.logspace(-5, 5, 11)
-    test_frac = flux_fraction_sersic(test_radii, r_disk, r_bulge, bulge_frac)
+    test_frac = flux_fraction_within_radius(test_radii, r_disk, r_bulge, bulge_frac)
     idx_min = np.argmin(np.abs(test_frac - flux_frac))
     r_bracket = (test_radii[idx_min-1], test_radii[idx_min+1])
 
     def root_function(radius: float):
-        return flux_fraction_sersic(
+        return flux_fraction_within_radius(
             radius, r_disk, r_bulge, bulge_frac) - flux_frac
 
     solution = root_scalar(
@@ -179,10 +180,10 @@ def effective_radius_parallel(
 
     # split in to chunks and process in parallel
     with multiprocessing.Pool(threads) as pool:
-        args = (
+        args = zip(
             np.array_split(r_disk, threads),
             np.array_split(r_bulge, threads),
             np.array_split(bulge_frac, threads),
-            [flux_frac] * threads)
+            itertools.repeat(flux_frac))
         r_eff = np.concatenate(pool.starmap(effective_radius_vectorized, args))
     return r_eff
