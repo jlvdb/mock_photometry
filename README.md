@@ -14,6 +14,9 @@ more complex image detection process:
 5. Perturb the photometry (flux or magnitude) by adding a Gaussian random flux
    component based on the photometric uncertainty.
 
+> When using this code in published work, please cite  
+> van den Busch et al. (2020), A&A 642, A200 (arXiv:2007.01846)
+
 
 ## Installation
 
